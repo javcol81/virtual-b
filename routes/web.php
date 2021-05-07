@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\PaymentController;
 use App\Events\OrderStatusChangedEvent;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 /*
@@ -107,7 +108,8 @@ Route::prefix('admin')->group(function () {
 //MercadoPago
 
 Route::post('/payments/pay', [PaymentController::class, 'pay'])->name('pay');
-Route::get('/payments/approval', [PaymentController::class, 'approval'])->name('approval');
+Route::get('/payments/approval/', [PaymentController::class, 'approval'])->name('approval');
+Route::get('/payments/pending', [PaymentController::class, 'pending'])->name('pending');
 Route::get('/payments/cancelled', [PaymentController::class, 'cancelled'])->name('cancelled');
 
 Auth::routes();
