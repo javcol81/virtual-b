@@ -17,4 +17,18 @@ class Order extends Model
 	public function status() {
 		return $this->belongsTo('App\Status');
 	}
+
+    public function lineItems()
+    {
+        // Estos datos son de ejemplo.
+        // Deberías tener una entidad que relacione la orden con los productos en la misma.
+        return [
+            (object) [
+                'name' => 'Producto 1',
+                'description' => 'Descripción del producto 1',
+                'quantity' => '1',
+                'price' => 1.90,
+            ]
+        ];
+	}
 }
