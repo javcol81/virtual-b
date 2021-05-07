@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 use App\Events\OrderStatusChangedEvent;
 use App\Order;
+use App\Services\Mercadopago;
 use App\User;
 use Illuminate\Http\Request;
+use MercadoPago\SDK;
 
 class UserOrderController extends Controller
 {
@@ -16,17 +18,13 @@ class UserOrderController extends Controller
     public function index() {
 		$user = auth()->user();
 		$orders = Order::with('status')->where('user_id', $user->id)->get();
-		
-
 
 		// $orders = Order::has('status')->where('user_id', $user->id)->get();
 		return view('order.index', compact('user', 'orders'));
 	}
 
-	public function create(Request $request) {
-		
-       
-
+	public function create(Request $request)
+    {
 		$user = User::where('email', $request->input('email'))->count();
 
         if($user > 0)
@@ -35,18 +33,17 @@ class UserOrderController extends Controller
         }
         else{
         echo "<script type='text/javascript'>alert('EL E-mail NO es correcto');
-        
+
         </script>";
 
         return view('template.compra');
 		}
-		
+
 	}
 
 	public function store(Request $request, Order $order) {
 		$request->validate([
 			'telefono' => 'required',
-			
 		]);
 
 		$order = Order::create([
@@ -59,7 +56,10 @@ class UserOrderController extends Controller
 			'email' => $request->email,
 		]);
 		event(new OrderStatusChangedEvent($order));
-		return redirect()->route('user.order.show', $order)->with('message', 'Orden recibida');
+
+		return view('checkout.show', [
+            'checkout' => (new Mercadopago($order))->generateCheckout(),
+        ]);
 	}
 	/**
 	 * Display the specific resource
